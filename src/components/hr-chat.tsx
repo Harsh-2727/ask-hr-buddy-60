@@ -31,18 +31,25 @@ function textOf(message: UIMessage) {
 }
 
 export function HrChat() {
-  const [initialMessages] = useState<UIMessage[]>(loadMessages);
+  const [hydrated, setHydrated] = useState(false);
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const { messages, sendMessage, status, error, setMessages } = useChat({
     id: "hr-leave-chat",
-    messages: initialMessages,
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
+  // Restore the saved conversation after hydration so SSR and client markup match.
   useEffect(() => {
+    const saved = loadMessages();
+    if (saved.length > 0) setMessages(saved);
+    setHydrated(true);
+  }, [setMessages]);
+
+  useEffect(() => {
+    if (!hydrated) return;
     if (status === "ready" || status === "error") {
       try {
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
@@ -50,7 +57,8 @@ export function HrChat() {
         /* storage unavailable */
       }
     }
-  }, [messages, status]);
+  }, [messages, status, hydrated]);
+
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
