@@ -1,24 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { HrChat } from "@/components/hr-chat";
+
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Leave & HR Assistant" },
+      {
+        name: "description",
+        content:
+          "Ask about annual, sick, unpaid, parental and bereavement leave — entitlements, notice periods, forms and approvals.",
+      },
+      { property: "og:title", content: "Leave & HR Assistant" },
+      {
+        property: "og:description",
+        content:
+          "Instant answers from your company leave policy: entitlements, notice periods, forms and approvals.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <main className="surface-hero min-h-[100dvh]">
+      <HrChat />
+    </main>
   );
 }
